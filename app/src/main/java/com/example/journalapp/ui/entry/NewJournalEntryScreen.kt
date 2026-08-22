@@ -1,5 +1,10 @@
 package com.example.journalapp.ui.entry
 
+import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -34,7 +39,21 @@ fun NewJournalEntryScreen(
     navigateBack: () -> Unit,
     viewModel: NewJournalEntryViewModel = viewModel(factory = AppViewModelProvider.Factory) // connection to viewModel! (to update/save entry details)
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope() // coroutine for save button
+
+    // PHOTO STUFF
+    // Registers a photo picker activity launcher in multi-select mode.
+    // In this example, the app lets the user select up to 5 media files.
+    val pickMultipleMedia =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
+            // Callback is invoked after the user selects media items or closes the
+            // photo picker.
+            if (uris.isNotEmpty()) {
+                Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
+            } else {
+                Log.d("PhotoPicker", "No media selected")
+            }
+        }
 
     Scaffold(
 
@@ -49,24 +68,28 @@ fun NewJournalEntryScreen(
                     navigateBack()
                 }
             },
+            onAddPhotoClick = { pickMultipleMedia.launch(PickVisualMediaRequest(
+                ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
             modifier = Modifier.padding(
                 start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                 end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
                 top = innerPadding.calculateTopPadding()
             )
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
+                .fillMaxWidth(),
         )
     }
 }
 
-// BODY (AKA INPUT FORM + SAVE BUTTON)
+// BODY (AKA INPUT FORM + SAVE BUTTON + ADD PHOTO BUTTON)
 @Composable
 fun NewJournalEntryBody(
     entryUiState: EntryUiState,
     onEntryValueChange: (EntryDetails) -> Unit,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onAddPhotoClick: () -> Unit,
+    modifier: Modifier = Modifier,
+
 ) {
     Column(
 
@@ -84,6 +107,13 @@ fun NewJournalEntryBody(
             enabled = entryUiState.isEntryValid
         ) {
             Text(text = stringResource(R.string.save_action))
+        }
+
+        // ADD PHOTO BUTTON
+        Button(
+            onClick = onAddPhotoClick,
+        ) {
+            Text(text = stringResource(R.string.add_photo_action))
         }
     }
 }
@@ -129,6 +159,6 @@ private fun NewJournalEntryScreenPreview() {
             entryUiState = EntryUiState(
                 EntryDetails(date = "2026-08-14", text = "It's Chaewon's birthday! Happy birthday to Chaewon wow she's 20!")
             ),
-            onEntryValueChange = {}, onSaveClick = {})
+            onEntryValueChange = {}, onSaveClick = {}, onAddPhotoClick = {})
     }
 }
