@@ -1,5 +1,7 @@
 package com.example.journalapp.ui.entry
 
+import android.content.ContentUris
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -18,17 +22,24 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.journalapp.R
 import com.example.journalapp.data.Entry
 import com.example.journalapp.ui.AppViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.journalapp.ui.theme.JournalAppTheme
 import kotlinx.coroutines.launch
+import coil3.compose.AsyncImage
+import androidx.compose.foundation.lazy.items
 
 
 // NAVIGATION STUFF HERE LATER !!!
@@ -42,13 +53,18 @@ fun NewJournalEntryScreen(
     val coroutineScope = rememberCoroutineScope() // coroutine for save button
 
     // PHOTO STUFF
+    // list of URIS of selected of photos - whenev list of selected photos changes, trigger recomposition!
+    var selectedUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
     // Registers a photo picker activity launcher in multi-select mode.
     // In this example, the app lets the user select up to 5 media files.
     val pickMultipleMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
             // Callback is invoked after the user selects media items or closes the
             // photo picker.
+            // uris - list of select photos' URIs
             if (uris.isNotEmpty()) {
+                selectedUris = uris
                 Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
             } else {
                 Log.d("PhotoPicker", "No media selected")
@@ -70,6 +86,7 @@ fun NewJournalEntryScreen(
             },
             onAddPhotoClick = { pickMultipleMedia.launch(PickVisualMediaRequest(
                 ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
+            selectedUris,
             modifier = Modifier.padding(
                 start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                 end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
@@ -81,13 +98,14 @@ fun NewJournalEntryScreen(
     }
 }
 
-// BODY (AKA INPUT FORM + SAVE BUTTON + ADD PHOTO BUTTON)
+// BODY - ALL ELEMENTS (AKA INPUT FORM + SAVE BUTTON + ADD PHOTO BUTTON + PHOTOS DISPLAYED)
 @Composable
 fun NewJournalEntryBody(
     entryUiState: EntryUiState,
     onEntryValueChange: (EntryDetails) -> Unit,
     onSaveClick: () -> Unit,
     onAddPhotoClick: () -> Unit,
+    selectedUris: List<Uri>,
     modifier: Modifier = Modifier,
 
 ) {
@@ -114,6 +132,18 @@ fun NewJournalEntryBody(
             onClick = onAddPhotoClick,
         ) {
             Text(text = stringResource(R.string.add_photo_action))
+        }
+        
+        // PHOTOS DISPLAYED
+        LazyRow{
+            // for each uri in selectedUris list, display image!
+            items(selectedUris) { uri ->
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Wikipedia Penguin Images",
+                    modifier = Modifier.size(80.dp)
+                )
+            }
         }
     }
 }
@@ -159,6 +189,6 @@ private fun NewJournalEntryScreenPreview() {
             entryUiState = EntryUiState(
                 EntryDetails(date = "2026-08-14", text = "It's Chaewon's birthday! Happy birthday to Chaewon wow she's 20!")
             ),
-            onEntryValueChange = {}, onSaveClick = {}, onAddPhotoClick = {})
+            onEntryValueChange = {}, onSaveClick = {}, onAddPhotoClick = {}, listOf())
     }
 }

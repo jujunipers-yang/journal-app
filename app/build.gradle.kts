@@ -60,4 +60,6 @@ dependencies {
     ksp(libs.androidx.room3.compiler)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }
