@@ -12,7 +12,7 @@ import androidx.room3.RoomDatabase
  * abstract bc RoomDatabase (parent) builds implementation for u!
  * (so ur just providing the functions that u want it to include)
  */
-@Database(entities = [Entry::class, Photo::class], version = 1, exportSchema = false)
+@Database(entities = [Entry::class, Photo::class], version = 2, exportSchema = false)
 abstract class JournalDatabase : RoomDatabase() {
 
     // singleton - connection to dao!
@@ -30,6 +30,7 @@ abstract class JournalDatabase : RoomDatabase() {
         fun getDatabase(context: Context): JournalDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, JournalDatabase::class.java, "journal_database")
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
                     .also { Instance = it }
             }

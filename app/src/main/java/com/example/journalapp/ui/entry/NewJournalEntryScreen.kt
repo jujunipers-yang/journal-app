@@ -79,14 +79,18 @@ fun NewJournalEntryScreen(
             onEntryValueChange = viewModel::updateUiState, // connect w viewModel, update ui state!
             onSaveClick = { // connect w viewModel, save curr ui state to repo!!
                 coroutineScope.launch {
-                    viewModel.saveItem()
+                    val entryId = viewModel.saveEntryAndReturnId() // save entry + collect entryId (for photo)!
+                    viewModel.savePhotos(entryId.toInt()) // save photos!! (w entry id collected above)
                     viewModel.resetUiState()
                     navigateBack()
                 }
             },
-            onAddPhotoClick = { pickMultipleMedia.launch(PickVisualMediaRequest(
-                ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
-            selectedUris,
+            onAddPhotoClick = {
+                pickMultipleMedia.launch(PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                viewModel.updateUiStatePhotos(selectedUris)
+                              },
+            selectedUris = selectedUris,
             modifier = Modifier.padding(
                 start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                 end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),

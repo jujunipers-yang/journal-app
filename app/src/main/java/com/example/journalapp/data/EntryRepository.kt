@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface EntryRepository {
 
-    suspend fun insertEntry(entry: Entry)
+    suspend fun insertEntry(entry: Entry): Long
 
     suspend fun updateEntry(entry: Entry)
 

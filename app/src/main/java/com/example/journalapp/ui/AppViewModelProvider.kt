@@ -21,7 +21,7 @@ object AppViewModelProvider {
 
         // Initializer for NewJournalEntryViewModel
         initializer {
-            NewJournalEntryViewModel(journalApplication().container.entryRepository)
+            NewJournalEntryViewModel(journalApplication().container.entryRepository, journalApplication().container.photoRepository)
         }
     }
 }

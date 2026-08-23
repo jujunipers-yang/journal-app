@@ -13,8 +13,10 @@ interface EntryDao {
 
     // Convenience annotations! (automatically implemented by Room)
 
+    // this version of insert will return its id (Long) when called!!
+    // -> so photo knows what id to connect to after!
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(entry: Entry)
+    suspend fun insert(entry: Entry): Long
 
     @Update
     suspend fun update(entry: Entry)
