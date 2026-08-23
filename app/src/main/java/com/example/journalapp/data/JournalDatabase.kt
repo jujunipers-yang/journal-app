@@ -12,11 +12,12 @@ import androidx.room3.RoomDatabase
  * abstract bc RoomDatabase (parent) builds implementation for u!
  * (so ur just providing the functions that u want it to include)
  */
-@Database(entities = [Entry::class], version = 1, exportSchema = false)
+@Database(entities = [Entry::class, Photo::class], version = 1, exportSchema = false)
 abstract class JournalDatabase : RoomDatabase() {
 
     // singleton - connection to dao!
     abstract fun entryDao(): EntryDao
+    abstract fun photoDao(): PhotoDao
 
     // stores static variables/functions in kotlin!
     companion object {
