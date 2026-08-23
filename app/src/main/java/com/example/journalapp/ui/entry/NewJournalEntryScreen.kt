@@ -53,18 +53,14 @@ fun NewJournalEntryScreen(
     val coroutineScope = rememberCoroutineScope() // coroutine for save button
 
     // PHOTO STUFF
-    // list of URIS of selected of photos - whenev list of selected photos changes, trigger recomposition!
-    var selectedUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-
     // Registers a photo picker activity launcher in multi-select mode.
     // In this example, the app lets the user select up to 5 media files.
     val pickMultipleMedia =
         rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
-            // Callback is invoked after the user selects media items or closes the
-            // photo picker.
+            // This callback is invoked AFTER the user selects media items or closes the photo picker!!
             // uris - list of select photos' URIs
             if (uris.isNotEmpty()) {
-                selectedUris = uris
+                viewModel.updateUiStatePhotos(uris) // update ui state photos!
                 Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
             } else {
                 Log.d("PhotoPicker", "No media selected")
@@ -86,11 +82,10 @@ fun NewJournalEntryScreen(
                 }
             },
             onAddPhotoClick = {
-                pickMultipleMedia.launch(PickVisualMediaRequest(
+                pickMultipleMedia.launch(PickVisualMediaRequest( // launch the callback! (top of class)
                     ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                viewModel.updateUiStatePhotos(selectedUris)
                               },
-            selectedUris = selectedUris,
+            selectedUris = viewModel.entryUiState.entryPhotoUris,
             modifier = Modifier.padding(
                 start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                 end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
