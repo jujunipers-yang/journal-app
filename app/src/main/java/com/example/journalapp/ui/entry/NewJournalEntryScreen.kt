@@ -40,6 +40,7 @@ import com.example.journalapp.ui.theme.JournalAppTheme
 import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
 import androidx.compose.foundation.lazy.items
+import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 
 
 // NAVIGATION STUFF HERE LATER !!!
@@ -56,7 +57,7 @@ fun NewJournalEntryScreen(
     // Registers a photo picker activity launcher in multi-select mode.
     // In this example, the app lets the user select up to 5 media files.
     val pickMultipleMedia =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
+        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(MAX_PHOTOS_PER_ENTRY)) { uris ->
             // This callback is invoked AFTER the user selects media items or closes the photo picker!!
             // uris - list of select photos' URIs
             if (uris.isNotEmpty()) {
@@ -129,6 +130,7 @@ fun NewJournalEntryBody(
         // ADD PHOTO BUTTON
         Button(
             onClick = onAddPhotoClick,
+            enabled = entryUiState.entryPhotoUris.size < MAX_PHOTOS_PER_ENTRY // only enabled if max # photos not reached!
         ) {
             Text(text = stringResource(R.string.add_photo_action))
         }
@@ -140,7 +142,7 @@ fun NewJournalEntryBody(
                 AsyncImage(
                     model = uri,
                     contentDescription = "Wikipedia Penguin Images",
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

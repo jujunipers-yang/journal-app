@@ -1,4 +1,3 @@
 package com.example.journalapp
 
-class Constants {
-}
+const val MAX_PHOTOS_PER_ENTRY = 8

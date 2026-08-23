@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.room.util.copy
 import android.net.Uri
+import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 import com.example.journalapp.data.Entry
 import com.example.journalapp.data.EntryRepository
 import com.example.journalapp.data.Photo
@@ -38,9 +39,10 @@ class NewJournalEntryViewModel(private val entryRepository : EntryRepository, pr
      * (called by ui screen whenever 'Add photo' button is clicked!)
      */
     fun updateUiStatePhotos(uris: List<Uri>) {
-        entryUiState = entryUiState.copy(entryPhotoUris = entryUiState.entryPhotoUris + uris) // wanna create whole NEW ui state instance (instead of just changing a value),
+        entryUiState = entryUiState.copy(entryPhotoUris = (entryUiState.entryPhotoUris + uris).take(MAX_PHOTOS_PER_ENTRY)) // wanna create whole NEW ui state instance (instead of just changing a value),
         // bc the recomposition (of entryUiState due to mutableStateOf) is only triggered whenever new EntryUiState() obj is created! (recomp is needed
         // to update ui screen w new changed values)
+        // take -> truncates list-adding to max # photos - any photos that go past the limit are ignored!!
     }
 
     /**
