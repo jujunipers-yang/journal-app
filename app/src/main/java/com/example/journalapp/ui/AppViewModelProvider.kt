@@ -16,7 +16,7 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         // Initializer for HomeViewModel
         initializer {
-            HomeViewModel(journalApplication().container.entryRepository)
+            HomeViewModel(journalApplication().container.entryRepository, journalApplication().container.photoRepository)
         }
 
         // Initializer for NewJournalEntryViewModel
