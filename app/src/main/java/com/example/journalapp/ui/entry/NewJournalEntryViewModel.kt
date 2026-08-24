@@ -38,8 +38,8 @@ class NewJournalEntryViewModel(private val entryRepository : EntryRepository, pr
      * Update curr ui state with new given photos!
      * (called by ui screen whenever 'Add photo' button is clicked!)
      */
-    fun updateUiStatePhotos(uris: List<Uri>) {
-        entryUiState = entryUiState.copy(entryPhotoUris = (entryUiState.entryPhotoUris + uris).take(MAX_PHOTOS_PER_ENTRY)) // wanna create whole NEW ui state instance (instead of just changing a value),
+    fun updateUiStatePhotos(paths: List<String>) {
+        entryUiState = entryUiState.copy(entryPhotoPaths = (entryUiState.entryPhotoPaths + paths).take(MAX_PHOTOS_PER_ENTRY)) // wanna create whole NEW ui state instance (instead of just changing a value),
         // bc the recomposition (of entryUiState due to mutableStateOf) is only triggered whenever new EntryUiState() obj is created! (recomp is needed
         // to update ui screen w new changed values)
         // take -> truncates list-adding to max # photos - any photos that go past the limit are ignored!!
@@ -74,8 +74,8 @@ class NewJournalEntryViewModel(private val entryRepository : EntryRepository, pr
      */
     suspend fun savePhotos(entryId: Int) {
         // For each photo uri in ui state entryPhotoUris, save to repo!
-        for(photoUri in entryUiState.entryPhotoUris) {
-            photoRepository.insertPhoto(photoUri.toPhoto(entryId))
+        for(photoPath in entryUiState.entryPhotoPaths) {
+            photoRepository.insertPhoto(photoPath.toPhoto(entryId))
         }
     }
 
@@ -97,7 +97,7 @@ class NewJournalEntryViewModel(private val entryRepository : EntryRepository, pr
 data class EntryUiState(
     val entryDetails: EntryDetails = EntryDetails(),
     val isEntryValid: Boolean = false,
-    val entryPhotoUris: List<Uri> = listOf()
+    val entryPhotoPaths: List<String> = listOf()
 )
 
 /**
@@ -128,7 +128,7 @@ fun Entry.toEntryUiState(isEntryValid: Boolean = false): EntryUiState = EntryUiS
     isEntryValid = isEntryValid
 )
 
-fun Uri.toPhoto(entryId: Int): Photo = Photo(
-    uriString = this.toString(), // this refers to Uri! (class ur converting from)
+fun String.toPhoto(entryId: Int): Photo = Photo(
+    uriString = this, // this refers to Uri! (class ur converting from)
     entryId = entryId
 )

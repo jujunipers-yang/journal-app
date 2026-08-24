@@ -38,6 +38,7 @@ import coil3.compose.AsyncImage
 import com.example.journalapp.data.Photo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import java.io.File
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -166,10 +167,10 @@ private fun JournalEntry(
         )
         // PHOTOS DISPLAYED
         LazyRow{
-            // for each uri in selectedUris list, display image!
+            // for each path in selectedPaths list, display image!
             items(photos) { photo ->
                 AsyncImage(
-                    model = photo.uriString.toUri(),
+                    model = File(photo.uriString),
                     contentDescription = "Journal entry photo",
                     modifier = Modifier.size(80.dp)
                 )

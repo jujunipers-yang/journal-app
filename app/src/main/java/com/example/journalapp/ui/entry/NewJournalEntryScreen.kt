@@ -43,6 +43,8 @@ import coil3.compose.AsyncImage
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
+import com.example.journalapp.copyUriToInternalStorage
+import java.io.File
 
 
 // NAVIGATION STUFF HERE LATER !!!
@@ -65,17 +67,8 @@ fun NewJournalEntryScreen(
             // This callback is invoked AFTER the user selects media items or closes the photo picker!!
             // uris - list of select photos' URIs
             if (uris.isNotEmpty()) {
-                uris.forEach { uri -> // request URI permissions
-                    try {
-                        context.contentResolver.takePersistableUriPermission(
-                            uri,
-                            Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        )
-                    } catch (e: SecurityException) {
-                        Log.w("PhotoPicker", "Could not persist permission for $uri", e)
-                    }
-                }
-                viewModel.updateUiStatePhotos(uris) // update ui state photos!
+                val localPaths = uris.map { uri -> copyUriToInternalStorage(context, uri) } // convert each picked uri to a local path
+                viewModel.updateUiStatePhotos(localPaths) // update ui state photos!
                 Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
             } else {
                 Log.d("PhotoPicker", "No media selected")
@@ -100,7 +93,7 @@ fun NewJournalEntryScreen(
                 pickMultipleMedia.launch(PickVisualMediaRequest( // launch the callback! (top of class)
                     ActivityResultContracts.PickVisualMedia.ImageAndVideo))
                               },
-            selectedUris = viewModel.entryUiState.entryPhotoUris,
+            selectedPaths = viewModel.entryUiState.entryPhotoPaths,
             modifier = Modifier.padding(
                 start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                 end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
@@ -119,7 +112,7 @@ fun NewJournalEntryBody(
     onEntryValueChange: (EntryDetails) -> Unit,
     onSaveClick: () -> Unit,
     onAddPhotoClick: () -> Unit,
-    selectedUris: List<Uri>,
+    selectedPaths: List<String>,
     modifier: Modifier = Modifier,
 
 ) {
@@ -144,17 +137,17 @@ fun NewJournalEntryBody(
         // ADD PHOTO BUTTON
         Button(
             onClick = onAddPhotoClick,
-            enabled = entryUiState.entryPhotoUris.size < MAX_PHOTOS_PER_ENTRY // only enabled if max # photos not reached!
+            enabled = entryUiState.entryPhotoPaths.size < MAX_PHOTOS_PER_ENTRY // only enabled if max # photos not reached!
         ) {
             Text(text = stringResource(R.string.add_photo_action))
         }
         
         // PHOTOS DISPLAYED
         LazyRow{
-            // for each uri in selectedUris list, display image!
-            items(selectedUris) { uri ->
+            // for each path in selectedPaths list, display image!
+            items(selectedPaths) { path ->
                 AsyncImage(
-                    model = uri,
+                    model = File(path),
                     contentDescription = "Journal entry photo",
                     modifier = Modifier.size(80.dp)
                 )
