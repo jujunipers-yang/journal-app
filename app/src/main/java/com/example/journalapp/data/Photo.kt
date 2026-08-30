@@ -23,6 +23,6 @@ import coil3.Uri
 )
 data class Photo (
     @PrimaryKey(autoGenerate = true) val photoId: Int = 0,
-    val uriString: String, // store uri as String, bc Room can only persist primitive-ish types!
+    val path: String,
     val entryId: Int
 )

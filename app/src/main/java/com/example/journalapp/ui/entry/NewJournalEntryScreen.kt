@@ -1,8 +1,5 @@
 package com.example.journalapp.ui.entry
 
-import android.content.ContentUris
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -67,8 +64,8 @@ fun NewJournalEntryScreen(
             // This callback is invoked AFTER the user selects media items or closes the photo picker!!
             // uris - list of select photos' URIs
             if (uris.isNotEmpty()) {
-                val localPaths = uris.map { uri -> copyUriToInternalStorage(context, uri) } // convert each picked uri to a local path
-                viewModel.updateUiStatePhotos(localPaths) // update ui state photos!
+                val localPaths = uris.map { uri -> copyUriToInternalStorage(context, uri) } // copy image to local storage, and retrieve its path
+                viewModel.updateUiStatePhotos(localPaths) // update ui state with new photo paths!
                 Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
             } else {
                 Log.d("PhotoPicker", "No media selected")
@@ -144,7 +141,7 @@ fun NewJournalEntryBody(
         
         // PHOTOS DISPLAYED
         LazyRow{
-            // for each path in selectedPaths list, display image!
+            // for each image's path in selectedPaths list, display image!
             items(selectedPaths) { path ->
                 AsyncImage(
                     model = File(path),

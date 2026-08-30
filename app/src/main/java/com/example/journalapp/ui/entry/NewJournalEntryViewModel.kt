@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.room.util.copy
-import android.net.Uri
 import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 import com.example.journalapp.data.Entry
 import com.example.journalapp.data.EntryRepository
@@ -73,7 +72,7 @@ class NewJournalEntryViewModel(private val entryRepository : EntryRepository, pr
      * (called by ui screen when 'Save' is pressed!)
      */
     suspend fun savePhotos(entryId: Int) {
-        // For each photo uri in ui state entryPhotoUris, save to repo!
+        // For each photo path in ui state entryPhotoPaths, save to repo!
         for(photoPath in entryUiState.entryPhotoPaths) {
             photoRepository.insertPhoto(photoPath.toPhoto(entryId))
         }
@@ -129,6 +128,6 @@ fun Entry.toEntryUiState(isEntryValid: Boolean = false): EntryUiState = EntryUiS
 )
 
 fun String.toPhoto(entryId: Int): Photo = Photo(
-    uriString = this, // this refers to Uri! (class ur converting from)
+    path = this, // this refers to the String ur converting from!
     entryId = entryId
 )

@@ -33,7 +33,6 @@ import com.example.journalapp.ui.theme.JournalAppTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.example.journalapp.data.Photo
 import kotlinx.coroutines.flow.Flow
@@ -170,7 +169,7 @@ private fun JournalEntry(
             // for each path in selectedPaths list, display image!
             items(photos) { photo ->
                 AsyncImage(
-                    model = File(photo.uriString),
+                    model = File(photo.path),
                     contentDescription = "Journal entry photo",
                     modifier = Modifier.size(80.dp)
                 )
