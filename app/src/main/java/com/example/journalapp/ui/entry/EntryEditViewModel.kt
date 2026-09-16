@@ -94,7 +94,7 @@ class EntryEditViewModel(
      * Updates this entry in repo with its current ui state (wtv it is)!
      * (called by ui screen when 'Save' is pressed!)
      */
-    suspend fun updateEntry() { // andReturnId ??
+    suspend fun updateEntry() {
         if(validateInput()) {
             // UPDATE ENTRY in repo by passing in curr uiState! (func for that in repo!)
             entryRepository.updateEntry(entryUiState.entryDetails.toEntry()) // convert entry ui state to entry
@@ -102,7 +102,9 @@ class EntryEditViewModel(
             // UPDATE PHOTOS logic - delete all photos curr in db, then save current
             // Delete existing photos
             val existingPhotos = photoRepository.getEntryPhotosStream(entryId).first()
-            existingPhotos.forEach { photoRepository.deletePhoto(it) }
+            for(photo in existingPhotos) {
+                photoRepository.deletePhoto(photo)
+            }
 
             // Add back in the curr uiState's photos!
             // For each photo path in ui state entryPhotoPaths, save to repo!
@@ -110,6 +112,20 @@ class EntryEditViewModel(
                 photoRepository.insertPhoto(photoPath.toPhoto(entryId))
             }
 
+        }
+    }
+
+    /**
+     * Delete this entry
+     * (called by ui screen when 'Delete' is pressed)
+     */
+    suspend fun deleteEntry() {
+        // Delete entry data by calling repo
+        entryRepository.deleteEntry(entryUiState.entryDetails.toEntry())
+
+        // Delete photos by calling repo
+        for(photoPath in entryUiState.entryPhotoPaths) {
+            photoRepository.deletePhoto(photoPath.toPhoto(entryId))
         }
     }
 

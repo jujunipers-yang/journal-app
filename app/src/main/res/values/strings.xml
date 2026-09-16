@@ -4,9 +4,14 @@
     <string name="edit_entry">Edit Entry</string>
     <string name="no_entry_description">Oops!\nNo entries in the journal.\nTap + to add.</string>
     <string name="save_action">Save</string>
+    <string name="delete_action">Delete</string>
     <string name="entry_date_req">Entry Date</string>
     <string name="entry_text_req">Entry Text</string>
     <string name="add_new_entry_title">New Entry</string>
     <string name="add_photo_action">Add Photo</string>
+    <string name="attention">Attention</string>
+    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 
 </resources>
