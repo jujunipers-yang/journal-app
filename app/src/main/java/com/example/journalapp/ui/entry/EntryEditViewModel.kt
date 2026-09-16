@@ -129,4 +129,16 @@ class EntryEditViewModel(
         }
     }
 
+    /**
+     * Deletes a specific photo from curr uiState
+     * (called by ui screen by 'X' button is pressed in corner of the photo)
+     */
+    fun deletePhoto(pathToDelete: String) {
+        // Remove path from list of photo paths of curr uiState!
+        val ogPhotoPathList = entryUiState.entryPhotoPaths
+        entryUiState = entryUiState.copy(
+            entryPhotoPaths = ogPhotoPathList - pathToDelete
+        )
+    }
+
 }

@@ -79,6 +79,18 @@ class NewJournalEntryViewModel(private val entryRepository : EntryRepository, pr
     }
 
     /**
+     * Deletes a specific photo from curr uiState
+     * (called by ui screen by 'X' button is pressed in corner of the photo)
+     */
+    fun deletePhoto(pathToDelete: String) {
+        // Remove path from list of photo paths of curr uiState!
+        val ogPhotoPathList = entryUiState.entryPhotoPaths
+        entryUiState = entryUiState.copy(
+            entryPhotoPaths = ogPhotoPathList - pathToDelete
+        )
+    }
+
+    /**
      * Temporary - until nav host is implemented !!!!!!
      * Reset ui state to blank state (so that when click FAB for new entry,
      * doesn't just take prev entry's ui state, but starts a new one)

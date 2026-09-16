@@ -97,6 +97,7 @@ fun EntryEditScreen(
                         ActivityResultContracts.PickVisualMedia.ImageAndVideo))
                 },
                 selectedPaths = viewModel.entryUiState.entryPhotoPaths,
+                onDeletePhotoClick = viewModel::deletePhoto,
                 modifier = Modifier
                     .padding(
                         start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),

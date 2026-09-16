@@ -5,6 +5,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -38,6 +39,13 @@ import com.example.journalapp.ui.theme.JournalAppTheme
 import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 import com.example.journalapp.copyUriToInternalStorage
@@ -95,11 +103,13 @@ fun NewJournalEntryScreen(
                     ActivityResultContracts.PickVisualMedia.ImageAndVideo))
                               },
             selectedPaths = viewModel.entryUiState.entryPhotoPaths,
-            modifier = Modifier.padding(
-                start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                top = innerPadding.calculateTopPadding()
-            )
+            onDeletePhotoClick = viewModel::deletePhoto,
+            modifier = Modifier
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+                    top = innerPadding.calculateTopPadding()
+                )
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth(),
         )
@@ -114,6 +124,7 @@ fun NewJournalEntryBody(
     onSaveClick: () -> Unit,
     onAddPhotoClick: () -> Unit,
     selectedPaths: List<String>,
+    onDeletePhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 
 ) {
@@ -147,11 +158,29 @@ fun NewJournalEntryBody(
         LazyRow{
             // for each image's path in selectedPaths list, display image!
             items(selectedPaths) { path ->
-                AsyncImage(
-                    model = File(path),
-                    contentDescription = "Journal entry photo",
+                Box(
+                    // Box - stack elements on top of each other
                     modifier = Modifier.size(80.dp)
-                )
+                ) {
+                    AsyncImage(
+                        model = File(path),
+                        contentDescription = "Journal entry photo",
+                        modifier = Modifier.size(80.dp)
+                    )
+                    // X ICON/BUTTON - to delete photo! (top right corner of photo)
+                    IconButton(
+                        onClick = { onDeletePhotoClick(path) },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd) // positions Box child to be top right corner
+                            .size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Remove photo",
+                            tint = Color.White
+                        )
+                    }
+                }
             }
         }
     }
@@ -198,6 +227,6 @@ private fun NewJournalEntryScreenPreview() {
             entryUiState = EntryUiState(
                 EntryDetails(date = "2026-08-14", text = "It's Chaewon's birthday! Happy birthday to Chaewon wow she's 20!")
             ),
-            onEntryValueChange = {}, onSaveClick = {}, onAddPhotoClick = {}, listOf())
+            onEntryValueChange = {}, onSaveClick = {}, onAddPhotoClick = {}, listOf(), onDeletePhotoClick = {})
     }
 }
