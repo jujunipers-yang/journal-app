@@ -5,6 +5,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -41,8 +42,13 @@ import coil3.compose.AsyncImage
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -51,6 +57,9 @@ import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 import com.example.journalapp.copyUriToInternalStorage
 import com.example.journalapp.ui.navigation.NavigationDestination
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 object NewJournalEntryDestination : NavigationDestination {
@@ -196,15 +205,50 @@ fun EntryInputForm(
     Column(
         modifier = modifier
     ) {
-        // DATE FIELD
-        OutlinedTextField(
-            value = entryDetails.date,
-            onValueChange = { onValueChange(entryDetails.copy(date = it)) }, // on date field changed,
-                // update entryDetails with copy of itself, but with the new date value
-            label = { Text(stringResource(R.string.entry_date_req)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
+        // DATE PICKER VARIABLES
+        // Track visibility state of the dialog
+        var showModal by remember { mutableStateOf(false) }
+
+        // Manage the internal state of the date picker
+        val datePickerState = rememberDatePickerState()
+
+        // DATE FIELD (text field, clickable to open Date Picker Dialog)
+        OutlinedButton(
+            onClick = { showModal = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = entryDetails.date.ifBlank { stringResource(R.string.entry_date_req) }
+            )
+        }
+        // Render DatePickerDialog when visibility flag is true!
+        if(showModal) {
+            DatePickerDialog(
+                onDismissRequest = { showModal = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        // Extract the selected date in Epoch milliseconds, then convert to readable date format!
+                        val selectionMillis = datePickerState.selectedDateMillis
+                        if (selectionMillis != null) {
+                            // Update date value!
+                            onValueChange(entryDetails.copy(date = convertMillisToDate(selectionMillis)))
+                            // on date value changed, update entryDetails w new value!
+                        }
+                        showModal = false
+                    }) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showModal = false }) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                // The actual content of the dialog container
+                DatePicker(state = datePickerState)
+            }
+        }
 
         // TEXT FIELD
         OutlinedTextField(
@@ -218,6 +262,12 @@ fun EntryInputForm(
     }
 }
 
+// Helper function to format Epoch milliseconds to a readable Date String
+// (takes computer raw number, in millis, which rep date -> readable Date String of format u want)
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
+}
 
 @Preview(showBackground = true)
 @Composable
