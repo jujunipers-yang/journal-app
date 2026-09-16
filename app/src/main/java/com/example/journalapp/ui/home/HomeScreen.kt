@@ -1,5 +1,6 @@
 package com.example.journalapp.ui.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,7 +42,6 @@ import java.io.File
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
-
     override val titleRes = R.string.app_name
 }
 
@@ -53,6 +53,7 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     navigateToNewJournalEntry: () -> Unit,
+    navigateToEntryEdit: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory) // connection to viewModel!!! (to retrieve entries)
 ) {
@@ -80,6 +81,7 @@ fun HomeScreen(
         HomeBody(
             entriesList = homeUiState.entriesList, // PASS IN LIST OF ENTRIES!!!!
             getEntryPhotosStream = viewModel::getEntryPhotosStream,
+            onEntryClick = navigateToEntryEdit,
             modifier = modifier.fillMaxSize(),
             contentPadding = innerPadding
         )
@@ -91,6 +93,7 @@ fun HomeScreen(
 private fun HomeBody(
     entriesList: List<Entry>,
     getEntryPhotosStream: (Int) -> Flow<List<Photo>>,
+    onEntryClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -107,8 +110,9 @@ private fun HomeBody(
         } else {
             // DISPLAY LIST OF JOURNAL ENTRIES
             JournalEntriesList(
-                entriesList,
+                entriesList = entriesList,
                 getEntryPhotosStream = getEntryPhotosStream,
+                onEntryClick = { onEntryClick(it.id) },
                 modifier = Modifier.padding()
             )
         }
@@ -120,6 +124,7 @@ private fun HomeBody(
 private fun JournalEntriesList(
     entriesList: List<Entry>,
     getEntryPhotosStream: (Int) -> Flow<List<Photo>>,
+    onEntryClick: (Entry) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // LIST OF ALL THE JOURNALENTRY COMPOSABLES!
@@ -131,7 +136,8 @@ private fun JournalEntriesList(
                 entry = entry,
                 getEntryPhotosStream = getEntryPhotosStream,
                 modifier = Modifier
-                )
+                    .clickable { onEntryClick(entry) }
+            )
         }
     }
 
@@ -190,7 +196,8 @@ fun HomeBodyPreview() {
                 Entry(1, "2026-01-12", "Hello my name is Julia."),
                 Entry(2, "2026-02-21", "Hello my name is Kate."),
             ),
-            getEntryPhotosStream = { flowOf(emptyList()) }
+            getEntryPhotosStream = { flowOf(emptyList()) },
+            onEntryClick = {}
         )
     }
 }
@@ -201,7 +208,8 @@ fun HomeBodyEmptyListPreview() {
     JournalAppTheme {
         HomeBody(
             listOf(),
-            getEntryPhotosStream = { flowOf(emptyList()) }
+            getEntryPhotosStream = { flowOf(emptyList()) },
+            onEntryClick = {}
         )
     }
 }

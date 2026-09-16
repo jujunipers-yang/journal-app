@@ -5,30 +5,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.journalapp.ui.entry.NewJournalEntryScreen
 import com.example.journalapp.ui.home.HomeScreen
+import com.example.journalapp.ui.navigation.JournalNavHost
 
 
 /**
- * Top-level composable as entry point for  entire application!
+ * Top-level composable as entry point for entire application!
  * (called by MainActivity)
  */
 @Composable
-fun JournalApp() {
-    // CODE BELOW IS CURRENTLY PLACEHOLDER FOR NAV GRAPH!!!!!
-    // (only doing this now bc only hv 2 screens! once 3+ screens should
-    // switch to nav graph...)
-
-    // var to trigger switching to NewJournalEntry screen!
-    var showNewJournalEntryScreen by remember { mutableStateOf(false) }
-
-    if(showNewJournalEntryScreen) {
-        NewJournalEntryScreen(
-            navigateBack = { showNewJournalEntryScreen = false }
-        )
-    } else {
-        HomeScreen(
-            navigateToNewJournalEntry = { showNewJournalEntryScreen = true }
-        )
-    }
+fun JournalApp(navController: NavHostController = rememberNavController()) {
+    JournalNavHost(navController = navController)
 }

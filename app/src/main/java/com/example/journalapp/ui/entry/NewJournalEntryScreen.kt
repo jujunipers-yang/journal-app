@@ -41,10 +41,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 import com.example.journalapp.copyUriToInternalStorage
+import com.example.journalapp.ui.navigation.NavigationDestination
 import java.io.File
 
 
-// NAVIGATION STUFF HERE LATER !!!
+object NewJournalEntryDestination : NavigationDestination {
+    override val route = "new_journal_entry"
+    override val titleRes = R.string.add_new_entry_title
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

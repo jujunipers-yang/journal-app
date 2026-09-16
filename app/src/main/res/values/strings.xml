@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Journal App</string>
+    <string name="new_journal_entry_title">New Journal Entry</string>
+    <string name="edit_entry">Edit Entry</string>
     <string name="no_entry_description">Oops!\nNo entries in the journal.\nTap + to add.</string>
     <string name="save_action">Save</string>
     <string name="entry_date_req">Entry Date</string>

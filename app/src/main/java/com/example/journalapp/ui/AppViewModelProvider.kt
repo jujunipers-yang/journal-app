@@ -1,10 +1,12 @@
 package com.example.journalapp.ui
 
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.journalapp.JournalApplication
+import com.example.journalapp.ui.entry.EntryEditViewModel
 import com.example.journalapp.ui.entry.NewJournalEntryViewModel
 import com.example.journalapp.ui.home.HomeViewModel
 
@@ -22,6 +24,14 @@ object AppViewModelProvider {
         // Initializer for NewJournalEntryViewModel
         initializer {
             NewJournalEntryViewModel(journalApplication().container.entryRepository, journalApplication().container.photoRepository)
+        }
+
+        // Initializer for EntryEditViewModel
+        initializer {
+            EntryEditViewModel(
+                this.createSavedStateHandle(),
+                journalApplication().container.entryRepository,
+                journalApplication().container.photoRepository)
         }
     }
 }
