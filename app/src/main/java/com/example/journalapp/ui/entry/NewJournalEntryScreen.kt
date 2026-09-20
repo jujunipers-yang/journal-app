@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.journalapp.JournalTopAppBar
 import com.example.journalapp.MAX_PHOTOS_PER_ENTRY
 import com.example.journalapp.copyUriToInternalStorage
 import com.example.journalapp.ui.navigation.NavigationDestination
@@ -71,6 +72,7 @@ object NewJournalEntryDestination : NavigationDestination {
 @Composable
 fun NewJournalEntryScreen(
     navigateBack: () -> Unit,
+    onNavigateUp: () -> Unit,
     viewModel: NewJournalEntryViewModel = viewModel(factory = AppViewModelProvider.Factory) // connection to viewModel! (to update/save entry details)
 ) {
     val coroutineScope = rememberCoroutineScope() // coroutine for save button
@@ -94,7 +96,13 @@ fun NewJournalEntryScreen(
         }
 
     Scaffold(
-
+        topBar = {
+            JournalTopAppBar(
+                title = stringResource(NewJournalEntryDestination.titleRes),
+                canNavigateBack = true,
+                navigateUp = onNavigateUp
+            )
+        }
     ) { innerPadding ->
         NewJournalEntryBody(
             entryUiState = viewModel.entryUiState, // connect w viewModel to get entry details!!
@@ -138,7 +146,7 @@ fun NewJournalEntryBody(
 
 ) {
     Column(
-
+        modifier = modifier
     ) {
         // INPUT FORM (has its own composable below!)
         EntryInputForm(

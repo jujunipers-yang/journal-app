@@ -35,7 +35,8 @@ fun JournalNavHost(
         }
         composable(route = NewJournalEntryDestination.route) {
             NewJournalEntryScreen(
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                onNavigateUp = { navController.navigateUp() }
             )
         }
         composable(
@@ -45,7 +46,8 @@ fun JournalNavHost(
             })
         ) {
             EntryEditScreen(
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                onNavigateUp = { navController.navigateUp() }
             )
         }
     }
